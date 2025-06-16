@@ -39,16 +39,12 @@ def main():
 
     for ii in range(30):
         thisDate = datetime.now() +timedelta(days=ii)
-        print(thisDate.date(), end=" ")
         
         json = generateParams(depStation, arrStation, passenger, thisDate)
         ret = post(URL, json=json, headers={"content-type": "application/json"})
         for tripRaw in ret.json()["data"]["searchJourney"]:
             trip = Trip(tripRaw)
-            printStr = f"({trip.departureTime.time()},{trip.arrivalTime.time()}, {trip.totalPrice/100})"
             db.addTrip(trip)
-            # print(printStr, end=" ")
-        # print()
     
 if __name__ == "__main__":
     main()
