@@ -33,8 +33,8 @@ def generateParams(depStation, arrStation, passengerType, depTime):
 
 
 def main():
-    depStation = stations.TPE
-    arrStation = stations.HKI
+    depStation = stations.HKI
+    arrStation = stations.JNS
     passenger = passengers.student
 
     for ii in range(30):
