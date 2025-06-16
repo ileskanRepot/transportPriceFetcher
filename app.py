@@ -1,6 +1,8 @@
 from requests import get, post
 from datetime import date, timedelta, datetime
+
 from attributes import stations, passengers, Trip
+from db import db
 
 URL = "https://www.vr.fi/api/v7"
 
@@ -29,26 +31,24 @@ def generateParams(depStation, arrStation, passengerType, depTime):
 # "operationName":123
 # }
 
-depStation = stations.TPE
-arrStation = stations.HKI
-depDate = date(year=2025, month=6, day=30)
-passenger = passengers.student
 
-# print(depDate+ timedelta(days=1))
+def main():
+    depStation = stations.TPE
+    arrStation = stations.HKI
+    passenger = passengers.student
 
-# json = generateParams(depStation, arrStation, passenger, depDate)
-# ret = post(URL, json=json, headers={"content-type": "application/json"})
-# for trip in ret.json()["data"]["searchJourney"]:
-#     print(Trip(trip))
-
-for ii in range(30):
-    thisDate = datetime.now() +timedelta(days=ii)
-    print(thisDate.date(), end=" ")
+    for ii in range(30):
+        thisDate = datetime.now() +timedelta(days=ii)
+        print(thisDate.date(), end=" ")
+        
+        json = generateParams(depStation, arrStation, passenger, thisDate)
+        ret = post(URL, json=json, headers={"content-type": "application/json"})
+        for tripRaw in ret.json()["data"]["searchJourney"]:
+            trip = Trip(tripRaw)
+            printStr = f"({trip.departureTime.time()},{trip.arrivalTime.time()}, {trip.totalPrice/100})"
+            db.addTrip(trip)
+            # print(printStr, end=" ")
+        # print()
     
-    json = generateParams(depStation, arrStation, passenger, thisDate)
-    ret = post(URL, json=json, headers={"content-type": "application/json"})
-    for tripRaw in ret.json()["data"]["searchJourney"]:
-        trip = Trip(tripRaw)
-        printStr = f"({trip.departureTime.time()},{trip.arrivalTime.time()}, {trip.totalPrice/100})"
-        print(printStr, end=" ")
-    print()
+if __name__ == "__main__":
+    main()
